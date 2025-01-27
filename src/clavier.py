@@ -42,13 +42,16 @@ class clavier(metaclass=Singleton):
         
         # Update paths to be relative to project directory
         self.notes_images = {
-            "f": os.path.join(project_dir, "src/note", "f.jpg"),
-            "re": os.path.join(project_dir, "note", "re.png"),
-            "mi": os.path.join(project_dir, "note", "mi.png"),
-            "fa": os.path.join(project_dir, "note", "fa.png"),
-            "sol": os.path.join(project_dir, "note", "sol.png"),
-            "la": os.path.join(project_dir, "note", "la.png"),
-            "si": os.path.join(project_dir, "note", "si.png")
+            "q": os.path.join(project_dir, "src/note", "do.png"),
+            "s": os.path.join(project_dir, "src/note", "re.png"),
+            "d": os.path.join(project_dir, "src/note", "mi.png"),
+            "f": os.path.join(project_dir, "src/note", "fa.png"),
+            "g": os.path.join(project_dir, "src/note", "sol.png"),
+            "h": os.path.join(project_dir, "src/note", "la.png"),
+            "j": os.path.join(project_dir, "src/note", "si.png"),
+            "k": os.path.join(project_dir, "src/note", "do.png"),
+            "l": os.path.join(project_dir, "src/note", "re2.png"),
+            "m": os.path.join(project_dir, "src/note", "mi2.png"),
         }
         self.last_id = None
         # position of the note
