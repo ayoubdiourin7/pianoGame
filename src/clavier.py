@@ -16,6 +16,7 @@ import time  # Added import
 import os
 from pathlib import Path
 from PIL import Image  # Added import
+import musicalbeeps  # Add this import
 
 
 class Singleton(type):
@@ -56,6 +57,23 @@ class clavier(metaclass=Singleton):
         self.last_id = None
         # position of the note
         self.center = (350, 100)
+        
+        # Initialize the player
+        self.player = musicalbeeps.Player(volume=0.3, mute_output=False)
+        
+        # Map keys to musical notes
+        self.notes_mapping = {
+            "q": "C4",  # Do
+            "s": "D4",  # Re
+            "d": "E4",  # Mi
+            "f": "F4",  # Fa
+            "g": "G4",  # Sol
+            "h": "A4",  # La
+            "j": "B4",  # Si
+            "k": "C5",  # Do (octave up)
+            "l": "D5",  # Re (octave up)
+            "m": "E5",  # Mi (octave up)
+        }
 
     def displayImage(self, note, image_path=None):
         try:
@@ -79,6 +97,14 @@ class clavier(metaclass=Singleton):
             print(f"Error displaying image: {str(e)}")
             print(f"Attempted to open: {image_path}")
 
+    def play_note(self, key):
+        try:
+            if key.lower() in self.notes_mapping:
+                note = self.notes_mapping[key.lower()]
+                self.player.play_note(note, 0.3)  # Play note for 0.3 seconds
+        except Exception as e:
+            print(f"Error playing note: {str(e)}")
+
     def Sendnotes(self, sender_agent_name, sender_agent_uuid, key_pressed=None):
         if key_pressed:
             # Delete previous text if it exists
@@ -90,6 +116,8 @@ class clavier(metaclass=Singleton):
                 image_path = self.notes_images[key_pressed.lower()]
                 print(f"Attempting to display image: {image_path}")
                 self.displayImage(key_pressed.lower(), image_path)
+                # Play the corresponding note
+                self.play_note(key_pressed)
             
         print(f"Key pressed: {key_pressed}")
    
