@@ -56,7 +56,7 @@ class clavier(metaclass=Singleton):
         }
         self.last_id = None
         # position of the note
-        self.center = (350, 100)
+        self.center = (100, 300)
         
         # Initialize the player
         self.player = musicalbeeps.Player(volume=0.3, mute_output=False)
@@ -82,15 +82,29 @@ class clavier(metaclass=Singleton):
                     image_data = img_file.read()
                     
                 with Image.open(image_path) as img:
-                    width, height = img.size
+                    # Resize the image to the desired dimensions (e.g., 100x100)
+                    new_size = (300, 300)  # Change this to your desired size
+                    resized_img = img.resize(new_size)
+                    width, height = resized_img.size
                     print(f"W: {width}, H: {height}")
-                
-                # Encode l'image en base64
-                image_b64 = base64.b64encode(image_data).decode('utf-8')
+                    
+                    # Save the resized image to a temporary file
+                    temp_image_path = os.path.join(os.path.dirname(image_path), "temp_resized_image.png")
+                    resized_img.save(temp_image_path)
+                    
+                    # Read the resized image data
+                    with open(temp_image_path, 'rb') as resized_img_file:
+                        resized_image_data = resized_img_file.read()
+                    
+                    # Encode the resized image in base64
+                    image_b64 = base64.b64encode(resized_image_data).decode('utf-8')
 
-                # Envoi de l'image à la whiteboard
-                arg = (image_b64, self.center[0], self.center[1], width, height)
-                igs.service_call("Whiteboard", "addImage", arg, None)
+                    # Send the resized image to the whiteboard
+                    arg = (image_b64, 400, 400, width, height)
+                    igs.service_call("Whiteboard", "addImage", arg, None)
+                    
+                    # Optionally, delete the temporary resized image file
+                    os.remove(temp_image_path)
             else:
                 print(f"Image not found: {image_path}")
         except Exception as e:
