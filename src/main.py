@@ -108,7 +108,7 @@ def New_Input_input_callback(io_type, name, value_type, value, my_data):
         print("New_InputI: ", agent_object.New_InputI)
         igs.service_call("Whiteboard", "addText", ("test", 350, 100, "black"), "")
 
-        # add code here if needed
+        
     except:
         print(traceback.format_exc())
 
@@ -193,6 +193,7 @@ if __name__ == "__main__":
                 print_usage()
             exit(1)
 
+    igs.service_call("Whiteboard", "addShape", ("rectangle", 1, 1000, 1400, 1, "green", "black", 3), None)
     agent = clavier()
 
 

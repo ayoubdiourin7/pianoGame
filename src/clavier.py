@@ -16,7 +16,7 @@ import time  # Added import
 import os
 from pathlib import Path
 from PIL import Image  # Added import
-import musicalbeeps  # Add this import
+from playsound import playsound  # Replace musicalbeeps import
 
 
 class Singleton(type):
@@ -29,9 +29,12 @@ class Singleton(type):
 
 class clavier(metaclass=Singleton):
     def __init__(self):
+        
         # inputs
         self.New_InputI = None
-        
+        print("clavier init")
+
+
         # Start keyboard listener
         self.listener = keyboard.Listener(on_press=self.on_press)
         self.listener.start()
@@ -56,24 +59,25 @@ class clavier(metaclass=Singleton):
         }
         self.last_id = None
         # position of the note
-        self.center = (100, 300)
+        self.center = (250, 400)
         
-        # Initialize the player
-        self.player = musicalbeeps.Player(volume=0.3, mute_output=False)
+        # Remove the player initialization
+        # self.player = musicalbeeps.Player(volume=0.3, mute_output=False)
         
-        # Map keys to musical notes
-        self.notes_mapping = {
-            "q": "C4",  # Do
-            "s": "D4",  # Re
-            "d": "E4",  # Mi
-            "f": "F4",  # Fa
-            "g": "G4",  # Sol
-            "h": "A4",  # La
-            "j": "B4",  # Si
-            "k": "C5",  # Do (octave up)
-            "l": "D5",  # Re (octave up)
-            "m": "E5",  # Mi (octave up)
+        # Replace notes_mapping with sound files mapping
+        self.notes_sounds = {
+            "q": os.path.join(project_dir, "src/sounds", "C.wav"),
+            "s": os.path.join(project_dir, "src/sounds", "D.wav"),
+            "d": os.path.join(project_dir, "src/sounds", "E.wav"),
+            "f": os.path.join(project_dir, "src/sounds", "F.wav"),
+            "g": os.path.join(project_dir, "src/sounds", "G.wav"),
+            "h": os.path.join(project_dir, "src/sounds", "A.wav"),
+            "j": os.path.join(project_dir, "src/sounds", "B.wav"),
+            "k": os.path.join(project_dir, "src/sounds", "C1.wav"),
+            "l": os.path.join(project_dir, "src/sounds", "D1.wav"),
+            "m": os.path.join(project_dir, "src/sounds", "E1.wav"),
         }
+
 
     def displayImage(self, note, image_path=None):
         try:
@@ -100,7 +104,7 @@ class clavier(metaclass=Singleton):
                     image_b64 = base64.b64encode(resized_image_data).decode('utf-8')
 
                     # Send the resized image to the whiteboard
-                    arg = (image_b64, 400, 400, width, height)
+                    arg = (image_b64, self.center[0], self.center[1], width, height)
                     igs.service_call("Whiteboard", "addImage", arg, None)
                     
                     # Optionally, delete the temporary resized image file
@@ -111,16 +115,23 @@ class clavier(metaclass=Singleton):
             print(f"Error displaying image: {str(e)}")
             print(f"Attempted to open: {image_path}")
 
-    def play_note(self, key):
+    def play_sound(self, key):
         try:
-            if key.lower() in self.notes_mapping:
-                note = self.notes_mapping[key.lower()]
-                self.player.play_note(note, 0.3)  # Play note for 0.3 seconds
+            if key.lower() in self.notes_sounds:
+                sound_path = self.notes_sounds[key.lower()]
+                if os.path.exists(sound_path):
+                    playsound(sound_path, block=False)  # Non-blocking sound playback
+                else:
+                    print(f"Sound file not found: {sound_path}")
         except Exception as e:
-            print(f"Error playing note: {str(e)}")
+            print(f"Error playing sound: {str(e)}")
 
     def Sendnotes(self, sender_agent_name, sender_agent_uuid, key_pressed=None):
+        # print a rectangle line on the whiteboard
+        print("Sendnotes")
+        
         if key_pressed:
+            igs.service_call("Whiteboard", "addShap", ("ellipse", 350, 350, 1400, 1, "green", "black", 3), None)
             # Delete previous text if it exists
             if self.last_id is not None:
                 print(f"Deleting text with ID: {self.last_id}")
@@ -130,8 +141,8 @@ class clavier(metaclass=Singleton):
                 image_path = self.notes_images[key_pressed.lower()]
                 print(f"Attempting to display image: {image_path}")
                 self.displayImage(key_pressed.lower(), image_path)
-                # Play the corresponding note
-                self.play_note(key_pressed)
+                # Play sound instead of musical note
+                self.play_sound(key_pressed)
             
         print(f"Key pressed: {key_pressed}")
    
@@ -148,5 +159,4 @@ class clavier(metaclass=Singleton):
         except:
             import traceback
             print(traceback.format_exc())
-
 
