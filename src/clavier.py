@@ -53,13 +53,13 @@ class clavier(metaclass=Singleton):
             "g": os.path.join(project_dir, "src/note", "sol.png"),
             "h": os.path.join(project_dir, "src/note", "la.png"),
             "j": os.path.join(project_dir, "src/note", "si.png"),
-            "k": os.path.join(project_dir, "src/note", "do.png"),
+            "k": os.path.join(project_dir, "src/note", "do2.png"),
             "l": os.path.join(project_dir, "src/note", "re2.png"),
             "m": os.path.join(project_dir, "src/note", "mi2.png"),
         }
         self.last_id = None
         # position of the note
-        self.center = (250, 400)
+        self.center = (566, 400)
         
         # Remove the player initialization
         # self.player = musicalbeeps.Player(volume=0.3, mute_output=False)
